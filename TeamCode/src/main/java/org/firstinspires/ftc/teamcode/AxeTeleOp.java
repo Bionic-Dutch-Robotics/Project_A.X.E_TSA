@@ -6,10 +6,8 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-
-@TeleOp(name = "Project AXE TeleOp")
+@TeleOp (name = "Project AXE TeleOp")
 public class AxeTeleOp extends OpMode {
-
     //private DcMotorEx and CRServo variables
 
     private DcMotorEx left;
