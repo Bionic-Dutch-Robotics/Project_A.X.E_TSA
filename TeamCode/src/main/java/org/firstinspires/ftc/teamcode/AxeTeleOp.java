@@ -6,8 +6,9 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-@TeleOp (name = "Project AXE TeleOp")
+@TeleOp (name = "Project AXE TeleOp", group = "AXE Code")
 public class AxeTeleOp extends OpMode {
+
     //private DcMotorEx and CRServo variables
 
     private DcMotorEx left;
@@ -37,7 +38,7 @@ public class AxeTeleOp extends OpMode {
 
         //drivetrain setMode
         {
-            right.setDirection(DcMotorEx.Direction.REVERSE);
+            right.setDirection(DcMotorEx.Direction.FORWARD);
             left.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             right.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
@@ -67,6 +68,7 @@ public class AxeTeleOp extends OpMode {
             extender.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             extender.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         }
 
 
@@ -86,22 +88,22 @@ public class AxeTeleOp extends OpMode {
         //arm
         {
             if (gamepad2.left_bumper) {
-                arm.setTargetPosition(500);
-                arm.setPower(.3);
+                //arm.setTargetPosition(500);
+                arm.setPower(.5);
             } else if (gamepad2.right_bumper) {
-                arm.setTargetPosition(0);
-                arm.setPower(-.3);
+                //arm.setTargetPosition(0);
+                arm.setPower(-.5);
             } else {
                 arm.setPower(0);
             }
         }
         //extender
         {
-            if (gamepad2.left_bumper) {
-                extender.setTargetPosition(300);
+            if (gamepad2.x) {
+               // extender.setTargetPosition(300);
                 extender.setPower(.5);
-            } else if (gamepad2.right_bumper) {
-                extender.setTargetPosition(100);
+            } else if (gamepad2.y) {
+                //extender.setTargetPosition(100);
                 extender.setPower(-.5);
             } else {
                 extender.setPower(0);
@@ -123,21 +125,21 @@ public class AxeTeleOp extends OpMode {
         //roll
         {
             if (gamepad2.dpad_left) {
-                this.roll.setPower(.5);
+                roll.setPower(.5);
             } else if (gamepad2.dpad_right) {
-                this.roll.setPower(-.5);
+                roll.setPower(-.5);
             } else {
-                this.roll.setPower(0);
+                roll.setPower(0);
             }
         }
         //pitch
         {
             if (gamepad2.dpad_up) {
-                this.pitch.setPower(.5);
+                pitch.setPower(.5);
             } else if (gamepad2.dpad_down) {
-                this.pitch.setPower(-.5);
+                pitch.setPower(-.5);
             } else {
-                this.pitch.setPower(0);
+                pitch.setPower(0);
             }
         }
 
