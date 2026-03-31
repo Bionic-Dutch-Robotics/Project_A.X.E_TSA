@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
 @TeleOp (name = "Project AXE TeleOp", group = "AXE Code")
 public class AxeTeleOp extends OpMode {
 
@@ -20,7 +22,11 @@ public class AxeTeleOp extends OpMode {
     private CRServo close;
     private CRServo pin;
     private CRServo ramp;
-
+    private double lastDriveForward, lastDriveTurn;
+    private ElapsedTime decelTimer;
+    private boolean isDecelerating = false;
+    private final double DECEL_INCREMENT = 0.005;
+    private double decelIncrementStatus;
     @Override
     public void init() {
         //hardwareMap
@@ -75,13 +81,12 @@ public class AxeTeleOp extends OpMode {
     }
 
     @Override
-    public void loop() {
+    public void start() {
+        decelTimer = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
+    }
 
-        //variables for drive train
-        {
-            double leftSideOutput = -gamepad1.left_stick_y + -gamepad1.right_stick_x;
-            double rightSideOutput = -gamepad1.left_stick_y - -gamepad1.right_stick_x;
-        }
+    @Override
+    public void loop() {
 
         //this is for gamepad2 for the arm and extender
 
@@ -166,12 +171,6 @@ public class AxeTeleOp extends OpMode {
             }
         }
         //Drive
-        {
-            this.runDrive(
-                    gamepad1.left_stick_y,
-                    gamepad1.left_stick_x
-            );
-        }
         //data for arm and extender
         {
             telemetry.addData("Arm Current Pos", arm.getCurrentPosition());
@@ -181,6 +180,44 @@ public class AxeTeleOp extends OpMode {
             telemetry.addData("Is Arm Moving?", arm.isBusy());
             telemetry.addData("Is Extender Moving?", extender.isBusy());
             telemetry.update();
+        }
+
+        if (isDecelerating) {
+            if (decelTimer.time() > 0 && decelTimer.time() < 0.5) {
+                {
+                    this.runDrive(
+                            lastDriveForward - DECEL_INCREMENT,
+                            lastDriveTurn - DECEL_INCREMENT
+                    );
+                }
+
+                lastDriveForward -= DECEL_INCREMENT;
+                lastDriveTurn -= DECEL_INCREMENT;
+            }
+            else {
+                this.runDrive(
+                        0,
+                        0
+                );
+                isDecelerating = false;
+            }
+
+            if (gamepad1.leftStickButtonWasPressed()) {
+                isDecelerating = false;
+            }
+        }
+        else {
+            this.runDrive(
+                    gamepad1.left_stick_y,
+                    gamepad1.left_stick_x
+            );
+
+            if (Math.abs(gamepad1.left_stick_y + gamepad1.left_stick_x) < 0.06 && Math.abs(lastDriveForward + lastDriveTurn) > 0.25) {
+                isDecelerating = true;
+            }
+
+            lastDriveForward = gamepad1.left_stick_y;
+            lastDriveTurn = gamepad1.left_stick_x;
         }
     }
 
